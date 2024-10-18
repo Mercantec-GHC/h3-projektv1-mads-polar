@@ -28,10 +28,13 @@ namespace API
             {
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidIssuer = Configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer"),
-                    ValidAudience = Configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience"),
+                    ValidIssuer = Configuration["JwtSettings:Issuer"],
+                    ValidAudience = Configuration["JwtSettings:Audience"],
 
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key"))),
+                    IssuerSigningKey = new SymmetricSecurityKey
+                    (
+                        Encoding.UTF8.GetBytes(Configuration["JwtSettings:Key"])
+                    ),
 
                     ValidateIssuer = true,
                     ValidateAudience = true,

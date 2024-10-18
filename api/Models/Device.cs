@@ -8,7 +8,7 @@
 
     public class DeviceDTO
     {
-        public string DeviceId { get; set }
+        public string DeviceId { get; set; }
         public string Status { get; set; }
     }
     }

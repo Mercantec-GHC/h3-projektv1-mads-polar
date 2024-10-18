@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.AspNetCore.Authorization;
+using System.Text.RegularExpressions;
 
 namespace API.Controllers
 {
@@ -112,16 +113,13 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser(LoginDTO loginDTO)
         {
-            User? userFinder = await _context.Users.FirstOrDefaultAsync(item => item.Email == loginDTO.Email);
-
-            if (userFinder == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, userFinder.HashedPassword))
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == loginDTO.Email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.HashedPassword))
             {
-                return BadRequest("Try again");
+                return Unauthorized(new { message = "Invalid email or password."});
             }
-
-            var token = GenerateJwtToken(userFinder);
-
-            return Ok(token);
+            var token = GenerateJwtToken(user);
+            return Ok(new { token, user.Username, user.Id });
         }
 
         // JWT Token used to login users and how long their session is valid for
@@ -130,28 +128,22 @@ namespace API.Controllers
 
             var claims = new[]
             {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-
-                new Claim(ClaimTypes.Name, user.Username),
-
-                new Claim(ClaimTypes.SerialNumber, user.Id.ToString())
+                new Claim(ClaimTypes.Name, user.Username)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key")));
-
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
+                (_configuration["JwtSettings:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
 
-            _configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer"),
-
-            _configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience"),
-
-            claims,
-
-            expires: DateTime.Now.AddDays(1),
-
-            signingCredentials: creds);
+                _configuration["JwtSettings:Issuer"],
+                _configuration["JwtSettings:Audience"],
+                claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
