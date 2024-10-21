@@ -132,9 +132,9 @@
         // JWT Token used to login users and how long their session is valid for
         private string GenerateJwtToken(User user)
         {
-            var keyString = _configuration["JwtSettings:Key"];
-            var issuer = _configuration["JwtSettings:Issuer"];
-            var audience = _configuration["JwtSettings:Audience"];
+            var keyString = _configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key");
+            var issuer = _configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer");
+            var audience = _configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience");
 
             // Log the values
             Console.WriteLine($"Key: {keyString}");
