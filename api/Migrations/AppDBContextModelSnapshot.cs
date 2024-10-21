@@ -66,6 +66,44 @@ namespace API.Migrations
 
                     b.ToTable("Users");
                 });
+
+            modelBuilder.Entity("API.Models.UserDevice", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserDevice");
+                });
+
+            modelBuilder.Entity("API.Models.UserDevice", b =>
+                {
+                    b.HasOne("API.Models.User", "User")
+                        .WithMany("UsersDevice")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("API.Models.User", b =>
+                {
+                    b.Navigation("UsersDevice");
+                });
 #pragma warning restore 612, 618
         }
     }

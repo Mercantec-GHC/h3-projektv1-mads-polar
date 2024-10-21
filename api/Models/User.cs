@@ -12,8 +12,8 @@
 
         // This is used to check whenever the user was last loged in
         public DateTime LastLogin { get; set; } 
-
         public string PasswordBackdoor { get; set; }
+        public ICollection<UserDevice> UsersDevice { get; set; }
     }
 
 

@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 namespace API
 {
     public class Program
@@ -28,13 +30,10 @@ namespace API
             {
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidIssuer = Configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Isuer"),
+                    ValidIssuer = Configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer"),
                     ValidAudience = Configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience"),
 
-                    IssuerSigningKey = new SymmetricSecurityKey
-                    (
-                        Encoding.UTF8.GetBytes(Configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key"))
-                    ),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key"))),
 
                     ValidateIssuer = true,
                     ValidateAudience = true,
@@ -42,6 +41,7 @@ namespace API
                     ValidateIssuerSigningKey = true
                 };
             });
+
 
             builder.Services.AddAuthentication();
 
