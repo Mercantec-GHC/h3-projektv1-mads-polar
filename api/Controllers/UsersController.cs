@@ -110,40 +110,58 @@
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser(LoginDTO loginDTO)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == loginDTO.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.HashedPassword))
+            try
             {
-                return Unauthorized(new { message = "Invalid email or password."});
+                var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == loginDTO.Email);
+                if (user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.HashedPassword))
+                {
+                    return Unauthorized(new { message = "Invalid email or password." });
+                }
+
+                var token = GenerateJwtToken(user);
+                return Ok(new { token, user.Username, user.Id });
             }
-            var token = GenerateJwtToken(user);
-            return Ok(new { token, user.Username, user.Id });
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in Login: {ex.Message}");
+                return StatusCode(500, "Internal server error.");
+            }
         }
+
 
         // JWT Token used to login users and how long their session is valid for
         private string GenerateJwtToken(User user)
         {
+            var keyString = _configuration["JwtSettings:Key"];
+            var issuer = _configuration["JwtSettings:Issuer"];
+            var audience = _configuration["JwtSettings:Audience"];
+
+            // Log the values
+            Console.WriteLine($"Key: {keyString}");
+            Console.WriteLine($"Issuer: {issuer}");
+            Console.WriteLine($"Audience: {audience}");
 
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), // Convert ID to string
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-                (_configuration["JwtSettings:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-
-                _configuration["JwtSettings:Issuer"],
-                _configuration["JwtSettings:Audience"],
+                issuer,
+                audience,
                 claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
 
         // DELETE: api/Users/
         [HttpDelete("{id}")]
