@@ -28,12 +28,28 @@ namespace API
                 x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(x =>
             {
+                string issuer = Configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer");
+                string audience = Configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience");
+                string key = Configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key");
+
+                // Debugging: Output the values of these settings
+                Console.WriteLine($"Issuer: {issuer}");
+                Console.WriteLine($"Audience: {audience}");
+                Console.WriteLine($"Key: {key}");
+
+                // Check if any value is null or empty to understand the issue
+                if (string.IsNullOrEmpty(issuer))
+                    Console.WriteLine("Warning: Issuer is null or empty.");
+                if (string.IsNullOrEmpty(audience))
+                    Console.WriteLine("Warning: Audience is null or empty.");
+                if (string.IsNullOrEmpty(key))
+                    Console.WriteLine("Warning: Key is null or empty.");
+
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidIssuer = Configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("Issuer"),
-                    ValidAudience = Configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("Audience"),
-
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key"))),
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
 
                     ValidateIssuer = true,
                     ValidateAudience = true,
