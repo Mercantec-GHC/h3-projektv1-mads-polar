@@ -16,15 +16,7 @@ namespace API.Models
         public DateTime LastLogin { get; set; } // This is used to check whenever the user was last loged in
         public string PasswordBackdoor { get; set; }
 
-        public ICollection<Device> Devices { get; set; }
-        public ICollection<UserDevice> UserDevices { get; set; }
-
-        // Constructor to initialize collections
-        public User()
-        {
-            Devices = new List<Device>(); // Initialize the collection for Devices
-            UserDevices = new List<UserDevice>(); // Initialize the collection for UserDevices
-        }
+        public List<UserDevice> UserDevices { get; set; }
     }
 
 

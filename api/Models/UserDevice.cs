@@ -7,6 +7,5 @@
 
         public User User { get; set; } // Navigation property to User
         public Device Device { get; set; } // Navigation property to Device
-        public DeviceData DeviceData { get; set; } // Navigation property to DeviceData (if needed)
     }
 }

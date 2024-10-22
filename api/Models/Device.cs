@@ -9,14 +9,9 @@
         public int BatteryLevel { get; set; } // The battery level of the device
         public bool IsOnline { get; set; } // Used to check if the device is connected to the server or not 
         
-        public ICollection<DeviceData> DeviceData { get; set; }
-        public ICollection<UserDevice> UserDevices { get; set; }
+        public List<DeviceData> DeviceData { get; set; }
+        public List<UserDevice> UserDevices { get; set; }
 
-        public Device()
-        {
-            DeviceData = new List<DeviceData>(); // Initialize the collection
-            UserDevices = new List<UserDevice>(); // Initialize the collection
-        }
     }
 
     public class DeviceDTO

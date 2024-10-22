@@ -54,12 +54,7 @@ namespace API.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Device");
                 });
@@ -81,10 +76,6 @@ namespace API.Migrations
 
                     b.Property<int>("SensorValue")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
@@ -155,10 +146,6 @@ namespace API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DeviceDataId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("DeviceId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -172,20 +159,11 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeviceDataId");
-
                     b.HasIndex("DeviceId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("UserDevice");
-                });
-
-            modelBuilder.Entity("API.Models.Device", b =>
-                {
-                    b.HasOne("API.Models.User", null)
-                        .WithMany("Devices")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("API.Models.DeviceData", b =>
@@ -201,12 +179,6 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.UserDevice", b =>
                 {
-                    b.HasOne("API.Models.DeviceData", "DeviceData")
-                        .WithMany()
-                        .HasForeignKey("DeviceDataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("API.Models.Device", "Device")
                         .WithMany("UserDevices")
                         .HasForeignKey("DeviceId")
@@ -221,8 +193,6 @@ namespace API.Migrations
 
                     b.Navigation("Device");
 
-                    b.Navigation("DeviceData");
-
                     b.Navigation("User");
                 });
 
@@ -235,8 +205,6 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.User", b =>
                 {
-                    b.Navigation("Devices");
-
                     b.Navigation("UserDevices");
                 });
 #pragma warning restore 612, 618
