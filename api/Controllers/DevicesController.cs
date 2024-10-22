@@ -1,4 +1,6 @@
-﻿namespace API.Controllers
+﻿using API.Models;
+
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -66,26 +68,27 @@
         // POST: api/Devices
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Device>> PostDevice(Device device)
+        public async Task<ActionResult<Device>> PostDevice(CreateDeviceDTO createDeviceDTO)
         {
+            Device device = new()
+            {
+                DeviceLocation = createDeviceDTO.DeviceLocation
+            };
+
+            var createDevice = MapcreateDeviceDTOToDevice(createDeviceDTO);
+
             _context.Device.Add(device);
+
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (DeviceExists(device.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+
             }
 
-            return CreatedAtAction("GetDevice", new { id = device.Id }, device);
+            return Ok(new { device.Id });
         }
 
         // DELETE: api/Devices/5
@@ -107,6 +110,17 @@
         private bool DeviceExists(string id)
         {
             return _context.Device.Any(e => e.Id == id);
+        }
+
+        private Device MapcreateDeviceDTOToDevice(CreateDeviceDTO createDeviceDTO)
+        {
+
+            return new Device
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                CreatedAt = DateTime.UtcNow.AddHours(2),
+                UpdatedAt = DateTime.UtcNow.AddHours(2),
+            };
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace API.Controllers
+﻿using API.Models;
+
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -75,10 +77,19 @@
                 Status = deviceDataDTO.Status
             };
 
-            _context.DeviceData.Add(deviceData);
-            await _context.SaveChangesAsync();
+            var addDeviceData = MapDeviceDataDTOToDeviceData(deviceDataDTO);
 
-            return Ok();
+            _context.DeviceData.Add(deviceData);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+            }
+
+            return Ok(new { deviceData.Id });
         }
 
         // DELETE: api/DeviceDatas/5
@@ -100,6 +111,17 @@
         private bool DeviceDataExists(string id)
         {
             return _context.DeviceData.Any(e => e.Id == id);
+        }
+
+        private DeviceData MapDeviceDataDTOToDeviceData(DeviceDataDTO deviceDataDTO)
+        {
+
+            return new DeviceData
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                CreatedAt = DateTime.UtcNow.AddHours(2),
+                UpdatedAt = DateTime.UtcNow.AddHours(2),
+            };
         }
     }
 }

@@ -90,7 +90,7 @@
                 return Conflict(new { message = "Password isnt secure." });
             }
 
-            var user = MapSingUpDTOToUSer(signUpDTO);
+            var user = MapSingUpDTOToUser(signUpDTO);
 
             _context.Users.Add(user);
 
@@ -199,7 +199,7 @@
                 && hasMinimum8Char.IsMatch(password);
         }
 
-        private User MapSingUpDTOToUSer(SignUpDTO signUpDTO)
+        private User MapSingUpDTOToUser(SignUpDTO signUpDTO)
         {
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signUpDTO.Password);
             string salt = hashedPassword.Substring(0, 29);

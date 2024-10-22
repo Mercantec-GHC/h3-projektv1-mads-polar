@@ -1,4 +1,6 @@
-﻿namespace API.Controllers
+﻿using API.Models;
+
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -66,26 +68,28 @@
         // POST: api/UserDevices
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserDevice>> PostUserDevice(UserDevice userDevice)
+        public async Task<ActionResult<UserDevice>> PostUserDevice(UserDeviceDTO userDeviceDTO)
         {
+            UserDevice userDevice = new()
+            {
+                UserId = userDeviceDTO.UserId,
+                DeviceId = userDeviceDTO.DeviceId
+            };
+
+            var addUserDevice = MapuserDeviceDTOToUserDevice(userDeviceDTO);
+
             _context.UserDevice.Add(userDevice);
+
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (UserDeviceExists(userDevice.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+
             }
 
-            return CreatedAtAction("GetUserDevice", new { id = userDevice.Id }, userDevice);
+            return Ok(new { userDevice.Id });
         }
 
         // DELETE: api/UserDevices/5
@@ -107,6 +111,17 @@
         private bool UserDeviceExists(string id)
         {
             return _context.UserDevice.Any(e => e.Id == id);
+        }
+
+        private UserDevice MapuserDeviceDTOToUserDevice(UserDeviceDTO userDeviceDTO)
+        {
+
+            return new UserDevice
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                CreatedAt = DateTime.UtcNow.AddHours(2),
+                UpdatedAt = DateTime.UtcNow.AddHours(2),
+            };
         }
     }
 }
