@@ -16,12 +16,9 @@ namespace API.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
                     DeviceStatus = table.Column<string>(type: "text", nullable: false),
-                    Location = table.Column<string>(type: "text", nullable: false),
-                    LastTriggered = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DeviceLocation = table.Column<string>(type: "text", nullable: false),
                     BatteryLevel = table.Column<int>(type: "integer", nullable: false),
-                    IsOnline = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -56,9 +53,8 @@ namespace API.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     DeviceId = table.Column<string>(type: "text", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    SensorValue = table.Column<int>(type: "integer", nullable: false),
-                    BatteryLevel = table.Column<int>(type: "integer", nullable: false),
+                    MotionSensorSensitivity = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

@@ -31,7 +31,7 @@ namespace API.Models
             User,
             Admin
         
-        }// The different roles
+        }
     }
 
 

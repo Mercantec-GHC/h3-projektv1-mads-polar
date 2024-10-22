@@ -66,26 +66,19 @@
         // POST: api/DeviceDatas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<DeviceData>> PostDeviceData(DeviceData deviceData)
+        public async Task<ActionResult<DeviceData>> PostDeviceData(DeviceDataDTO deviceDataDTO)
         {
-            _context.DeviceData.Add(deviceData);
-            try
+            DeviceData deviceData = new()
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (DeviceDataExists(deviceData.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                DeviceId = deviceDataDTO.DeviceId,
+                MotionSensorSensitivity = deviceDataDTO.MotionSensorSensitivity,
+                Status = deviceDataDTO.Status
+            };
 
-            return CreatedAtAction("GetDeviceData", new { id = deviceData.Id }, deviceData);
+            _context.DeviceData.Add(deviceData);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         // DELETE: api/DeviceDatas/5

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20241022090403_init1")]
+    [Migration("20241022120556_init1")]
     partial class init1
     {
         /// <inheritdoc />
@@ -36,21 +36,11 @@ namespace API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("DeviceLocation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("DeviceStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsOnline")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("LastTriggered")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -67,9 +57,6 @@ namespace API.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<int>("BatteryLevel")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -77,11 +64,11 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("SensorValue")
+                    b.Property<int>("MotionSensorSensitivity")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

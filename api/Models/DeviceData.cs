@@ -4,15 +4,21 @@
     {
         public string DeviceId { get; set; } // Foreign key to the Device
         public Device Device { get; set; } // Navigation property to the Device // Many-To-One relation 
+        public int MotionSensorSensitivity { get; set; } // Sensor value
+        public Status Status {  get; set; }
+    }
 
-        public DateTime Timestamp { get; set; } // When the data was recorded
-        public int SensorValue { get; set; } // Sensor value
-        public int BatteryLevel { get; set; } // Battery level when the data was recorded
-        public enum Status 
-        { 
-            Armed,
-            Disarmed,
-            Alerting
-        }
+    public class DeviceDataDTO
+    {
+        public string DeviceId { get; set; }
+        public int MotionSensorSensitivity { get; set; }
+        public Status Status { get; set; }
+    }
+
+    public enum Status 
+    { 
+        Disarmed,
+        Armed,
+        Alerting
     }
 }
