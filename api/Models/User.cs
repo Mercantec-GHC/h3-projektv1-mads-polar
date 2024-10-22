@@ -1,19 +1,21 @@
 ﻿namespace API.Models
 {
+    // This is the sign up/ login requirements
     public class User : Common
     {
-        // This is the sign up/ login requirements
         public string Email { get; set; }
         public string Username { get; set; }
 
         // This is used for security
         public string HashedPassword { get; set; }
         public string Salt { get; set; }
+        public int Role { get; set; } // 0 = User, 1 = Admin
 
-        // This is used to check whenever the user was last loged in
-        public DateTime LastLogin { get; set; } 
+        public DateTime LastLogin { get; set; } // This is used to check whenever the user was last loged in
         public string PasswordBackdoor { get; set; }
-        public ICollection<UserDevice> UsersDevice { get; set; }
+
+        public ICollection<Device> Devices { get; set; }
+        public ICollection<UserDevice> UserDevices { get; set; }
     }
 
 
@@ -22,7 +24,8 @@
         public string Id { get; set; }
         public string Email { get; set; }
         public string Username { get; set; }
-        //public Roles Roles { get; set; }
+        public string Password { get; set; }
+        public int Role { get; set; } // 0 = User, 1 = Admin
     }
 
 

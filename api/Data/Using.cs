@@ -1,8 +1,4 @@
 ﻿global using Microsoft.AspNetCore.Authentication.JwtBearer;
-global using System.ComponentModel.DataAnnotations.Schema;
-global using System.ComponentModel.DataAnnotations;
-global using Microsoft.AspNetCore.Identity.Data;
-global using Org.BouncyCastle.Crypto.Generators;
 global using Microsoft.AspNetCore.Authorization;
 global using System.IdentityModel.Tokens.Jwt;
 global using Microsoft.IdentityModel.Tokens;

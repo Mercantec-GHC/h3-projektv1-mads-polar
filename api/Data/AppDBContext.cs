@@ -55,6 +55,10 @@
                 entity.UpdatedAt = DateTime.UtcNow;
             }
         }
-    }
 
+        public DbSet<Device> Device { get; set; }
+        public DbSet<DeviceData> DeviceData { get; set; }
+        public DbSet<DeviceData> User { get; set; }
+        public DbSet<UserDevice> UserDevice { get; set; }
+    }
 }
