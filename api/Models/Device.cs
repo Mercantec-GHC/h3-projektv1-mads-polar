@@ -2,10 +2,9 @@
 {
     public class Device : Common
     {
-        public string DeviceStatus { get; set; } // Armed, Disarmed, or Alarming
+        public Status DeviceStatus { get; set; } // Armed, Disarmed, or Alarming
         public string DeviceLocation { get; set; } // Where the sensor is located
-        public int BatteryLevel { get; set; } // The battery level of the device
-        
+        public int MotionSensorSensitivity { get; set; } // Sensor value
         public List<DeviceData> DeviceData { get; set; }
         public List<UserDevice> UserDevices { get; set; }
 
@@ -14,13 +13,20 @@
     public class CreateDeviceDTO
     {
         public string DeviceLocation { get; set; } // Where the sensor is located
+        public int MotionSensorSensitivity { get; set; }
     }
 
-    public class DeviceStatusDTO
+    public class PutDeviceDTO
     {
-        public string DeviceStatus { get; set; } // Armed, Disarmed, or Alarming
-        public string DeviceLocation { get; set; } // Where the sensor is located
-        public int BatteryLevel { get; set; } // The battery level of the device
+        public Status DeviceStatus { get; set; } // Armed, Disarmed, or Alarming
+
+        //public string DeviceLocation { get; set; }
     }
 
+    public enum Status
+    {
+        Disarmed,
+        Armed,
+        Alerting
+    }
 }

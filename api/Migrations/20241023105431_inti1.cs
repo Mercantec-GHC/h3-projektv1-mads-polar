@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class init1 : Migration
+    public partial class inti1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,9 +16,9 @@ namespace API.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    DeviceStatus = table.Column<string>(type: "text", nullable: false),
+                    DeviceStatus = table.Column<int>(type: "integer", nullable: false),
                     DeviceLocation = table.Column<string>(type: "text", nullable: false),
-                    BatteryLevel = table.Column<int>(type: "integer", nullable: false),
+                    MotionSensorSensitivity = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -53,8 +53,7 @@ namespace API.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     DeviceId = table.Column<string>(type: "text", nullable: false),
-                    MotionSensorSensitivity = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
+                    BatteryLevel = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

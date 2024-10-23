@@ -70,16 +70,10 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<DeviceData>> PostDeviceData(DeviceDataDTO deviceDataDTO)
         {
-            DeviceData deviceData = new()
-            {
-                DeviceId = deviceDataDTO.DeviceId,
-                MotionSensorSensitivity = deviceDataDTO.MotionSensorSensitivity,
-                Status = deviceDataDTO.Status
-            };
 
             var addDeviceData = MapDeviceDataDTOToDeviceData(deviceDataDTO);
 
-            _context.DeviceData.Add(deviceData);
+            _context.DeviceData.Add(addDeviceData);
 
             try
             {
@@ -89,7 +83,7 @@ namespace API.Controllers
             {
             }
 
-            return Ok(new { deviceData.Id });
+            return Ok(new { addDeviceData.Id });
         }
 
         // DELETE: api/DeviceDatas/5
@@ -119,6 +113,7 @@ namespace API.Controllers
             return new DeviceData
             {
                 Id = Guid.NewGuid().ToString("N"),
+                BatteryLevel = deviceDataDTO.BatteryLevel,
                 CreatedAt = DateTime.UtcNow.AddHours(2),
                 UpdatedAt = DateTime.UtcNow.AddHours(2),
             };

@@ -34,16 +34,13 @@ namespace API.Controllers
             return device;
         }
 
-        // PUT: api/Devices/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDevice(string id, Device device)
+        // PUT: api/Devices/
+        [HttpPut]
+        public async Task<IActionResult> PutDevice(string id, PutDeviceDTO putDeviceDTO) // Class instance of the class
         {
-            if (id != device.Id)
-            {
-                return BadRequest();
-            }
-
+            // Find the device in the database
+            var device = await _context.Device.FindAsync(id);
+            device.DeviceStatus = putDeviceDTO.DeviceStatus;
             _context.Entry(device).State = EntityState.Modified;
 
             try
@@ -70,14 +67,10 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<Device>> PostDevice(CreateDeviceDTO createDeviceDTO)
         {
-            Device device = new()
-            {
-                DeviceLocation = createDeviceDTO.DeviceLocation
-            };
 
             var createDevice = MapcreateDeviceDTOToDevice(createDeviceDTO);
 
-            _context.Device.Add(device);
+            _context.Device.Add(createDevice);
 
             try
             {
@@ -88,7 +81,7 @@ namespace API.Controllers
 
             }
 
-            return Ok(new { device.Id });
+            return Ok(new { createDevice.Id });
         }
 
         // DELETE: api/Devices/5
@@ -118,6 +111,8 @@ namespace API.Controllers
             return new Device
             {
                 Id = Guid.NewGuid().ToString("N"),
+                DeviceStatus = Status.Disarmed,
+                DeviceLocation = createDeviceDTO.DeviceLocation,
                 CreatedAt = DateTime.UtcNow.AddHours(2),
                 UpdatedAt = DateTime.UtcNow.AddHours(2),
             };
