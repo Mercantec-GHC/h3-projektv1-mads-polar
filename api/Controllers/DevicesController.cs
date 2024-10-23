@@ -63,7 +63,6 @@ namespace API.Controllers
         }
 
         // POST: api/Devices
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Device>> PostDevice(CreateDeviceDTO createDeviceDTO)
         {

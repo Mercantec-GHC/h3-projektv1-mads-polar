@@ -55,33 +55,44 @@ namespace API
                 });
 
                 opt.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
                 {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            new string[]{}
-        }
-    });
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type=ReferenceType.SecurityScheme,
+                                Id="Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
             });
 
             builder.Services.AddAuthentication();
 
             var app = builder.Build();
+            
+            app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials());
 
+            // Configure the HTTP request pipeline.
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
+            app.MapScalarApiReference(options =>
+            {
+                options
+                    .WithDefaultHttpClient(ScalarTarget.C, ScalarClient.Libcurl)
+               .OpenApiRoutePattern = "/swagger/v1/swagger.json";
+            });
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-            app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials());
 
             app.MapControllers();
 
