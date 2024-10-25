@@ -1,112 +1,53 @@
-#include <Arduino_MKRIoTCarrier.h>
-#include <ArduinoHttpClient.h>
-#include <WiFiSSLClient.h>
-#include <ArduinoJson.h>
-#include <WiFiNINA.h> // Include WiFi library
+#include "SHS.h"
 
-// WiFi Configuration
-const char* ssid = "MAGS-OLC"; // Replace with your WiFi SSID
-const char* password = "Merc1234!"; // Replace with your WiFi password
+    SHS::SHS(const char *ssid, const char *password) : ssid(ssid), password(password)
+{
+}
 
-// Network Configuration
-WiFiClient wifiClient;
-HttpClient* httpClient;
-
-// Device Constants
-#define NUMPIXELS 5
-
-MKRIoTCarrier carrier;
-
-// Variables
-uint32_t yellowColor = 0xFFFF00; // Yellow color for detected motion
-uint32_t greenColor = 0x00FF00;  // Green color for disarmed state
-uint32_t redColor = 0xFF0000;    // Red color for armed state
-
-bool motionDetected = false;
-const int threshold = 200;
-const int motionPin = A6;
-bool ledShowOn = false;
-bool isArmed = false;
-bool onOff = false;
-int motion = 0;
-
-// To be deleted
-String deviceID = "41cfd26dd68d46a89a299e361454dc9c ";
-String batteryLevel = "100";
-
-void setup() {
+void SHS::begin()
+{
     CARRIER_CASE = false; // Deactivate carrier case if not mounted
     carrier.begin();
     Serial.begin(9600); // Initialize the serial communication
-    delay(2000); // Show message for 2 seconds
+    delay(2000);        // Show message for 2 seconds
 
     connectWiFi(); // Connect to WiFi
     httpClient = new HttpClient(wifiClient, "shs-ubpj.onrender.com", 443);
 }
 
-void loop() {
-    delay(100); // Delay to avoid constant polling
-    carrier.Buttons.update(); // Check button states
-
-    // Continuously monitor motion when armed
-    if (isArmed) {
-        checkMotion();
-    }
-
-    // Button actions
-    if (carrier.Buttons.onTouchDown(TOUCH0)) { 
-        // Disarm system
-        disarmSystem();
-    }
-
-    if (carrier.Buttons.onTouchDown(TOUCH1)) { 
-        // Arm system
-        armSystem();
-    }
-
-    if (carrier.Buttons.onTouchDown(TOUCH2)) { 
-        // Turn off LEDs
-        turnOffLEDs();
-    }
-
-    if (carrier.Buttons.onTouchDown(TOUCH3)) {
-        
-    }
-}
-
-void checkMotion() 
+void SHS::checkMotion()
 {
     int motionValue = analogRead(motionPin);
 
-    if (motionValue > threshold && !motionDetected) 
+    if (motionValue > threshold && !motionDetected)
     {
         motionDetected = true;
         Serial.println("Motion Detected!");
 
-        carrier.display.fillScreen(ST77XX_YELLOW);  // Display movement detection
+        carrier.display.fillScreen(ST77XX_YELLOW); // Display movement detection
         carrier.display.setCursor(20, 120);
         carrier.display.setTextColor(ST77XX_BLACK);
         carrier.display.println("Movement Detected!");
 
         // Turn on yellow LEDs
-        for (int i = 0; i < NUMPIXELS; i++) 
+        for (int i = 0; i < NUMPIXELS; i++)
         {
             carrier.leds.setPixelColor(i, yellowColor);
         }
-        
+
         carrier.leds.show(); // Refresh LEDs
         delay(200);
 
         // Keep the buzzer sounding in a loop until TOUCH0 is pressed
-        while (isArmed && motionDetected) 
+        while (isArmed && motionDetected)
         {
-            //carrier.Buzzer.sound(1000);  // Play a 1kHz tone
-            delay(500);                  // Tone duration
+            // carrier.Buzzer.sound(1000);  // Play a 1kHz tone
+            delay(500); // Tone duration
 
             // Update buttons to check if TOUCH0 is pressed to disarm
             carrier.Buttons.update();
 
-            if (carrier.Buttons.onTouchDown(TOUCH0)) 
+            if (carrier.Buttons.onTouchDown(TOUCH0))
             { // Disarm during buzzer
                 disarmSystem();
                 break; // Exit the loop when disarmed
@@ -114,8 +55,8 @@ void checkMotion()
 
             // Check for motion again to decide whether to continue the loop
             motionValue = analogRead(motionPin);
-            
-            if (motionValue >= threshold) 
+
+            if (motionValue >= threshold)
             {
                 motionDetected = false; // No motion, exit the loop
             }
@@ -123,7 +64,7 @@ void checkMotion()
     }
 }
 
-void armSystem() 
+void SHS::armSystem()
 {
     isArmed = true;
     ledShowOn = true;
@@ -139,18 +80,18 @@ void armSystem()
     Serial.println("Device Armed");
 
     // Turn on red LEDs
-    for (int i = 0; i < NUMPIXELS; i++) 
+    for (int i = 0; i < NUMPIXELS; i++)
     {
         carrier.leds.setPixelColor(i, redColor);
     }
-    
+
     carrier.leds.show(); // Refresh LEDs
     updateStatus();
     sendData();
     delay(200);
 }
 
-void disarmSystem() 
+void SHS::disarmSystem()
 {
     isArmed = false; // Disarm system
     ledShowOn = false;
@@ -166,7 +107,7 @@ void disarmSystem()
     Serial.println("Device Disarmed");
 
     // Turn on green LEDs
-    for (int i = 0; i < NUMPIXELS; i++) 
+    for (int i = 0; i < NUMPIXELS; i++)
     {
         carrier.leds.setPixelColor(i, greenColor);
     }
@@ -175,12 +116,12 @@ void disarmSystem()
     delay(200);
 }
 
-void turnOffLEDs() 
+void SHS::turnOffLEDs()
 {
     // Turn off all LEDs
     ledShowOn = false;
 
-    for (int i = 0; i < NUMPIXELS; i++) 
+    for (int i = 0; i < NUMPIXELS; i++)
     {
         carrier.leds.setPixelColor(i, 0);
     }
@@ -196,7 +137,7 @@ void turnOffLEDs()
     Serial.println("Device Turned off");
 }
 
-void connectWiFi()
+void SHS::connectWiFi()
 {
     Serial.print("Connecting to ");
     Serial.println(ssid);
@@ -207,7 +148,8 @@ void connectWiFi()
     carrier.display.setCursor(30, 100);
     carrier.display.print(ssid);
 
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED)
+    {
         WiFi.begin(ssid, password);
         delay(1000);
         Serial.print(".");
@@ -220,13 +162,13 @@ void connectWiFi()
     Serial.println(WiFi.localIP());
 }
 
-void readSensors() 
+void SHS::readSensors()
 {
     // Assuming you have a motion sensor
-    motion = analogRead(motionPin);  // or carrier.Env.readMotion();
+    motion = analogRead(motionPin); // or carrier.Env.readMotion();
 }
 
-void printData() 
+void SHS::printData()
 {
     carrier.display.fillScreen(0x0000);
     Serial.print("Motion: ");
@@ -235,7 +177,7 @@ void printData()
     sendData();
 }
 
-void sendData() 
+void SHS::sendData()
 {
     String postData = "{\"deviceId\":" + deviceID + ",\"batteryLevel\":" + String(batteryLevel) + "}";
 
@@ -243,7 +185,7 @@ void sendData()
     httpClient->post("/api/DeviceDatas");
     httpClient->sendHeader("Content-Type", "application/json");
     httpClient->sendHeader("Content-Length", postData.length());
-    httpClient->sendHeader("accept", "text/plain");
+    httpClient->sendHeader("accept", "");
     httpClient->beginBody();
     httpClient->print(postData);
     httpClient->endRequest();
@@ -255,48 +197,57 @@ void sendData()
     Serial.println(statusCode);
     Serial.print("Response: ");
     Serial.println(response);
-
-    carrier.display.fillScreen(0x07E0);
-    carrier.display.setCursor(30, 100);
-    carrier.display.print("WiFi Connected. ");
-    carrier.display.setCursor(30, 120);
-    carrier.display.print("IP: ");
-    carrier.display.print(WiFi.localIP());
 }
 
-String boolToString(bool isArmed) {
-  if (isArmed) {
-      return "1";
-  } 
-
-  else if(isArmed && motionDetected){
-      return "2";
-  }
-
-  else {
-      return "0";
-  }
-}
-
-void updateStatus()
+String SHS::boolToString(bool isArmed, bool motionDetected)
 {
-  String postData = "{\"deviceStatus\": " + boolToString(isArmed) + "}";
+    if (isArmed && motionDetected)
+    {
+        return "2";
+    }
 
-  Serial.println(postData);
-  httpClient->beginRequest();
-  httpClient->put("/api/Devices?id=" + deviceID);
-  httpClient->sendHeader("Content-Type", "application/json");
-  httpClient->sendHeader("Content-Length", postData.length());
-  httpClient->sendHeader("accept", "text/plain");
-  httpClient->beginBody();
-  httpClient->print(postData);
-  httpClient->endRequest();
+    else if (isArmed)
+    {
+        return "1";
+    }
 
-  int statusCode = httpClient->responseStatusCode();
-  String response = httpClient->responseBody();
-  
-  Serial.print("Status code: ");
-  Serial.println(statusCode);
-  Serial.print("Response: ");
-  Serial.println(response);
+    else
+    {
+        return "0";
+    }
+}
+
+void SHS::updateStatus()
+{
+    String postData = "{\"deviceStatus\": " + boolToString(isArmed, motionDetected) + "}";
+
+    Serial.println("Forsøger at opdatere status...");
+    Serial.println("Anmodningsdata: " + postData);
+    Serial.println("Enhedens ID: " + deviceID);
+
+    httpClient->beginRequest();
+    httpClient->put("/api/Devices?id=" + deviceID);
+    httpClient->sendHeader("Content-Type", "application/json");
+    httpClient->sendHeader("Content-Length", postData.length());
+    httpClient->sendHeader("accept", "*/*");
+    httpClient->beginBody();
+    httpClient->print(postData);
+    httpClient->endRequest();
+
+    int statusCode = httpClient->responseStatusCode();
+    String response = httpClient->responseBody();
+
+    Serial.print("Statuskode: ");
+    Serial.println(statusCode);
+    Serial.print("Svar: ");
+    Serial.println(response);
+
+    if (statusCode == 204)
+    {
+        Serial.println("Status opdateret succesfuldt.");
+    }
+    else
+    {
+        Serial.println("Fejl ved opdatering af status. Kontroller forbindelse og enhedens ID.");
+    }
 }
