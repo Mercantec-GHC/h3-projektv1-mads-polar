@@ -1,7 +1,16 @@
-﻿page "/"
+﻿@page "/"
+@inject NavigationManager NavManager
 
-<PageTitle>Home</PageTitle>
+<h1>Welcome to Blazor!</h1>
 
-<h1>Hello, world!</h1>
+<p>This is the home page of your Blazor application.</p>
 
-Welcome to your new app.
+<button @onclick="Redirect">Sign up</button>
+
+@code {
+    private void Redirect()
+    {
+        Console.WriteLine("Button clicked!");
+        NavManager.NavigateTo("/signup");
+    }
+}
