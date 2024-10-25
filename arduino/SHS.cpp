@@ -1,6 +1,6 @@
 #include "SHS.h"
 
-SHS::SHS(const char *ssid, const char *password): ssid(ssid), password(password) {}
+SHS::SHS(const char *ssid, const char *password) : ssid(ssid), password(password) {}
 
 void SHS::begin()
 {
@@ -146,7 +146,8 @@ void SHS::connectWiFi()
     carrier.display.setCursor(30, 100);
     carrier.display.print(ssid);
 
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED)
+    {
         WiFi.begin(ssid, password);
         delay(1000);
         Serial.print(".");
@@ -159,13 +160,13 @@ void SHS::connectWiFi()
     Serial.println(WiFi.localIP());
 }
 
-void SHS::readSensors() 
+void SHS::readSensors()
 {
     // Assuming you have a motion sensor
-    motion = analogRead(motionPin);  // or carrier.Env.readMotion();
+    motion = analogRead(motionPin); // or carrier.Env.readMotion();
 }
 
-void SHS::printData() 
+void SHS::printData()
 {
     carrier.display.fillScreen(0x0000);
     Serial.print("Motion: ");
@@ -174,16 +175,59 @@ void SHS::printData()
     sendData();
 }
 
-void SHS::sendData() 
+void SHS::sendData()
 {
-  /*
-    String postData = "{\"deviceId\":" + deviceID + ",\"batteryLevel\":" + String(batteryLevel) + "}";
+      String postData = "{\"deviceId\":" + deviceID + ",\"batteryLevel\":" + String(batteryLevel) + "}";
+
+      httpClient->beginRequest();
+      httpClient->post("/api/DeviceDatas");
+      httpClient->sendHeader("Content-Type", "application/json");
+      httpClient->sendHeader("Content-Length", postData.length());
+      httpClient->sendHeader("accept", "");
+      httpClient->beginBody();
+      httpClient->print(postData);
+      httpClient->endRequest();
+
+      int statusCode = httpClient->responseStatusCode();
+      String response = httpClient->responseBody();
+
+      Serial.print("Status code: ");
+      Serial.println(statusCode);
+      Serial.print("Response: ");
+      Serial.println(response);
+}
+
+String SHS::boolToString(bool isArmed, bool motionDetected)
+{
+    if (isArmed && motionDetected)
+    {
+        return "2";
+    }
+
+    else if (isArmed)
+    {
+        return "1";
+    }
+
+    else
+    {
+        return "0";
+    }
+}
+
+void SHS::updateStatus()
+{
+    String postData = "{\"deviceStatus\": " + boolToString(isArmed, motionDetected) + "}";
+
+    Serial.println("Forsøger at opdatere status...");
+    Serial.println("Anmodningsdata: " + postData);
+    Serial.println("Enhedens ID: " + deviceID);
 
     httpClient->beginRequest();
-    httpClient->post("/api/DeviceDatas");
+    httpClient->put("/api/Devices?id=" + deviceID);
     httpClient->sendHeader("Content-Type", "application/json");
     httpClient->sendHeader("Content-Length", postData.length());
-    httpClient->sendHeader("accept", "");
+    httpClient->sendHeader("accept", "*/*");
     httpClient->beginBody();
     httpClient->print(postData);
     httpClient->endRequest();
@@ -191,55 +235,17 @@ void SHS::sendData()
     int statusCode = httpClient->responseStatusCode();
     String response = httpClient->responseBody();
 
-    Serial.print("Status code: ");
+    Serial.print("Statuskode: ");
     Serial.println(statusCode);
-    Serial.print("Response: ");
-    Serial.println(response);*/
-}
+    Serial.print("Svar: ");
+    Serial.println(response);
 
-String SHS::boolToString(bool isArmed, bool motionDetected) 
-{
-  if(isArmed && motionDetected){
-      return "2";
-  }
-  
-  else if (isArmed) {
-      return "1";
-  } 
-
-  else {
-      return "0";
-  }
-}
-
-void SHS::updateStatus()
-{
-  String postData = "{\"deviceStatus\": " + boolToString(isArmed, motionDetected) + "}";
-
-  Serial.println("Forsøger at opdatere status...");
-  Serial.println("Anmodningsdata: " + postData);
-  Serial.println("Enhedens ID: " + deviceID);
-
-  httpClient->beginRequest();
-  httpClient->put("/api/Devices?id=" + deviceID);
-  httpClient->sendHeader("Content-Type", "application/json");
-  httpClient->sendHeader("Content-Length", postData.length());
-  httpClient->sendHeader("accept", "*/*");
-  httpClient->beginBody();
-  httpClient->print(postData);
-  httpClient->endRequest();
-
-  int statusCode = httpClient->responseStatusCode();
-  String response = httpClient->responseBody();
-
-  Serial.print("Statuskode: ");
-  Serial.println(statusCode);
-  Serial.print("Svar: ");
-  Serial.println(response);
-
-  if (statusCode == 204) {
-    Serial.println("Status opdateret succesfuldt.");
-  } else {
-    Serial.println("Fejl ved opdatering af status. Kontroller forbindelse og enhedens ID.");
-  }
+    if (statusCode == 204)
+    {
+        Serial.println("Status opdateret succesfuldt.");
+    }
+    else
+    {
+        Serial.println("Fejl ved opdatering af status. Kontroller forbindelse og enhedens ID.");
+    }
 }

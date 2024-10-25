@@ -23,8 +23,8 @@ private:
     bool ledShowOn = false;
     int motion = 0;
 
-    const char* ssid;
-    const char* password;
+    const char *ssid;
+    const char *password;
 
     // Network Configuration
     WiFiSSLClient wifiClient;
@@ -33,8 +33,8 @@ private:
     // To be deleted
     String deviceID = "41cfd26dd68d46a89a299e361454dc9c ";
     String batteryLevel = "100";
+
 public:
-    
     bool isArmed = false;
 
     MKRIoTCarrier carrier;
