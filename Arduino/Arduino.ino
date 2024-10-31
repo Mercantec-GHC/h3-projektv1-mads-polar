@@ -2,45 +2,49 @@
 
     SHS shs("MAGS-OLC", "Merc1234!");
 
-// To be deleted
-String deviceID = "41cfd26dd68d46a89a299e361454dc9c";
-String batteryLevel = "100";
-
 void setup()
 {
     shs.begin();
 }
 
-void loop()
+void loop() 
 {
-    delay(100);                   // Delay to avoid constant polling
+    delay(100); // Delay to avoid constant polling
     shs.carrier.Buttons.update(); // Check button states
 
-    shs.readSensors();
-    shs.printData();
-
     // Continuously monitor motion when armed
-    if (shs.isArmed)
-    {
+    if (shs.isArmed) {
         shs.checkMotion();
     }
 
-    // Button actions
-    if (shs.carrier.Buttons.onTouchDown(TOUCH0))
+    // Button actions with toggle state
+    if (shs.carrier.Buttons.onTouchDown(TOUCH0) && !shs.disarmButtonPressed) 
+    { 
+        shs.disarmSystem(); // Disarm system
+        shs.disarmButtonPressed = true;
+    } 
+    else if (shs.carrier.Buttons.onTouchUp(TOUCH0)) 
     {
-        // Disarm system
-        shs.disarmSystem();
+        shs.disarmButtonPressed = false;
     }
 
-    if (shs.carrier.Buttons.onTouchDown(TOUCH1))
+    if (shs.carrier.Buttons.onTouchDown(TOUCH1) && !shs.armButtonPressed) 
+    { 
+        shs.armSystem(); // Arm system
+        shs.armButtonPressed = true;
+    } 
+    else if (shs.carrier.Buttons.onTouchUp(TOUCH1)) 
     {
-        // Arm system
-        shs.armSystem();
+        shs.armButtonPressed = false;
     }
 
-    if (shs.carrier.Buttons.onTouchDown(TOUCH2))
+    if (shs.carrier.Buttons.onTouchDown(TOUCH2) && !shs.ledButtonPressed) 
+    { 
+        shs.turnOffLEDs(); // Turn off LEDs
+        shs.ledButtonPressed = true;
+    } 
+    else if (shs.carrier.Buttons.onTouchUp(TOUCH2)) 
     {
-        // Turn off LEDs
-        shs.turnOffLEDs();
+        shs.ledButtonPressed = false;
     }
 }
