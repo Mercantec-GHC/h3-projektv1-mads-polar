@@ -12,24 +12,26 @@
     class SHS
 {
 private:
-    // Variables
+    // Arduino color variables
     uint32_t yellowColor = 0xFFFF00; // Yellow color for detected motion
     uint32_t greenColor = 0x00FF00;  // Green color for disarmed state
     uint32_t redColor = 0xFF0000;    // Red color for armed state
-
-    bool motionDetected = false;
-    const int threshold = 800;
-    const int motionPin = A6;
     bool ledShowOn = false;
-    int motion = 0;
-
-    // Global timer variable
-    int motionDelay = 10000;  // Delay in milliseconds (10 seconds)
-    int deviceDelay = 10000;  // Delay in milliseconds (20 seconds)
 
     // To be deleted
     String deviceID = "41cfd26dd68d46a89a299e361454dc9c ";
     String batteryLevel = "100";
+
+    // Motion 
+    bool motionDetected = false;
+    const int motionPin = A6;
+    int motion = 0;
+
+    // Factory Settings
+    int motionDetectionDelay = 10000; // Delay in milliseconds (10 seconds)
+    int motionDetectionSensitivity = 200; // How much movement needs to happen before the sensor cares
+    int motionDetectionDistance = 200; // how far away the sensor can pick up movement from
+    int alarmDuration = 300000; // 5 minutes in milliseconds
 
     const char *ssid;
     const char *password;
@@ -51,7 +53,8 @@ public:
 
     SHS(const char *ssid, const char *password);
     void begin();
-    void connectWiFi();
+    void setupWiFi();
+    //void connectWiFi();
     void readSensors();
     void checkMotion();
     void armSystem();

@@ -103,7 +103,7 @@
 
             }
 
-            return Ok(new { user.Id, user.Username });
+            return Ok("User signup sucessful");
         }
 
         // POST: api/Userss

@@ -70,7 +70,6 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<DeviceData>> PostDeviceData(DeviceDataDTO deviceDataDTO)
         {
-
             var addDeviceData = MapDeviceDataDTOToDeviceData(deviceDataDTO);
 
             _context.DeviceData.Add(addDeviceData);
@@ -81,9 +80,10 @@ namespace API.Controllers
             }
             catch (DbUpdateException)
             {
+
             }
 
-            return Ok(new { addDeviceData.Id });
+            return Ok("Device data added succesfully");
         }
 
         // DELETE: api/DeviceDatas/5

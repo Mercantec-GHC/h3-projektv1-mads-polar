@@ -1,4 +1,6 @@
-﻿namespace API.Data
+﻿using Microsoft.EntityFrameworkCore;
+using API.Models;
+namespace API.Data
 {
     public class AppDBContext : DbContext
     {
@@ -55,10 +57,11 @@
                 entity.UpdatedAt = DateTime.UtcNow;
             }
         }
-
+        public DbSet<Common> Common { get; set; }
         public DbSet<Device> Device { get; set; }
         public DbSet<DeviceData> DeviceData { get; set; }
         public DbSet<DeviceData> User { get; set; }
         public DbSet<UserDevice> UserDevice { get; set; }
+        public DbSet<WiFi> WiFi { get; set; }
     }
 }

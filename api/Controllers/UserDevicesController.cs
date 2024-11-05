@@ -66,19 +66,27 @@ namespace API.Controllers
         }
 
         // POST: api/UserDevices
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<UserDevice>> PostUserDevice(UserDeviceDTO userDeviceDTO)
         {
-            UserDevice userDevice = new()
+            if (string.IsNullOrEmpty(userDeviceDTO.DeviceId) || string.IsNullOrEmpty(userDeviceDTO.UserId))
             {
-                UserId = userDeviceDTO.UserId,
-                DeviceId = userDeviceDTO.DeviceId
-            };
+                return BadRequest("Device ID or User ID is required.");
+            }
+
+            bool deviceExists = await _context.UserDevice.AnyAsync(d => d.DeviceId == userDeviceDTO.DeviceId);
+
+            bool userExists = await _context.UserDevice.AnyAsync(d => d.UserId == userDeviceDTO.UserId);
+
+
+            if (!deviceExists || !userExists)
+            {
+                return NotFound("Device or User does not exist in database.");
+            }
 
             var addUserDevice = MapuserDeviceDTOToUserDevice(userDeviceDTO);
 
-            _context.UserDevice.Add(userDevice);
+            _context.UserDevice.Add(addUserDevice);
 
             try
             {
@@ -89,7 +97,7 @@ namespace API.Controllers
 
             }
 
-            return Ok(new { userDevice.Id });
+            return Ok("User Device added succesfully");
         }
 
         // DELETE: api/UserDevices/5
@@ -119,6 +127,8 @@ namespace API.Controllers
             return new UserDevice
             {
                 Id = Guid.NewGuid().ToString("N"),
+                UserId = userDeviceDTO.UserId,
+                DeviceId = userDeviceDTO.DeviceId,
                 CreatedAt = DateTime.UtcNow.AddHours(2),
                 UpdatedAt = DateTime.UtcNow.AddHours(2),
             };

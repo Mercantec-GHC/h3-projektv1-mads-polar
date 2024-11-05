@@ -67,9 +67,9 @@ namespace API.Controllers
         public async Task<ActionResult<Device>> PostDevice(CreateDeviceDTO createDeviceDTO)
         {
 
-            var createDevice = MapcreateDeviceDTOToDevice(createDeviceDTO);
+            var addDevice = MapcreateDeviceDTOToDevice(createDeviceDTO);
 
-            _context.Device.Add(createDevice);
+            _context.Device.Add(addDevice);
 
             try
             {
@@ -80,7 +80,7 @@ namespace API.Controllers
 
             }
 
-            return Ok(new { createDevice.Id });
+            return Ok("Device added succesfully");
         }
 
         // DELETE: api/Devices/5

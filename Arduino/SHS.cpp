@@ -8,11 +8,42 @@ void SHS::begin()
     carrier.begin();
     Serial.begin(9600); // Initialize the serial communication
 
-    connectWiFi(); // Connect to WiFi
+
+    setupWiFi():
+    //connectWiFi(); // Connect to WiFi
     httpClient = new HttpClient(wifiClient, "shs-ubpj.onrender.com", 443);
 }
 
-void SHS::connectWiFi()
+void SHS::setupWiFi()
+{
+    // Attempt to fetch WiFi credentials from server
+    httpClient->get("/api/WiFi");
+    int statusCode = httpClient->responseStatusCode();
+    String response = httpClient->responseBody();
+
+    if (statusCode == 200)
+    {
+        // Parse JSON to extract ssid and password
+        DynamicJsonDocument doc(256);
+        deserializeJson(doc, response);
+        
+        const char *ssid = doc["WiFiName"];
+        const char *password = doc["WiFiPassword"];
+
+        // Set up with fetched WiFi credentials
+        this->ssid = ssid;
+        this->password = password;
+
+        // Connect to WiFi with new credentials
+        connectWiFi();
+    }
+    else
+    {
+        Serial.println("Failed to fetch WiFi credentials from server.");
+    }
+}
+
+/*void SHS::connectWiFi()
 {
     Serial.print("Connecting to ");
     Serial.println(ssid);
@@ -36,7 +67,7 @@ void SHS::connectWiFi()
     Serial.println("WiFi Connected.");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
-}
+}*/
 
 void SHS::readSensors()
 {

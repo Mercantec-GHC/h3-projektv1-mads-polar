@@ -1,6 +1,6 @@
 #include "SHS.h"
 
-    SHS shs("MAGS-OLC", "Merc1234!");
+    //SHS shs("MAGS-OLC", "Merc1234!");
 
 void setup()
 {
