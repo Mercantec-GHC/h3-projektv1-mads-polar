@@ -82,8 +82,8 @@ namespace API.Controllers
                 return BadRequest("Device ID is required.");
             }
 
-            // Check if the device exists
-            bool deviceExists = await _context.DeviceData.AnyAsync(d => d.DeviceId == wiFiDTO.DeviceId);
+            // Check if the device exists in the Device table
+            bool deviceExists = await _context.Device.AnyAsync(d => d.Id == wiFiDTO.DeviceId);
 
             if (!deviceExists)
             {

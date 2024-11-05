@@ -74,10 +74,9 @@ namespace API.Controllers
                 return BadRequest("Device ID or User ID is required.");
             }
 
-            bool deviceExists = await _context.UserDevice.AnyAsync(d => d.DeviceId == userDeviceDTO.DeviceId);
+            bool deviceExists = await _context.Device.AnyAsync(d => d.Id == userDeviceDTO.DeviceId);
 
-            bool userExists = await _context.UserDevice.AnyAsync(d => d.UserId == userDeviceDTO.UserId);
-
+            bool userExists = await _context.User.AnyAsync(u => u.Id == userDeviceDTO.UserId);
 
             if (!deviceExists || !userExists)
             {

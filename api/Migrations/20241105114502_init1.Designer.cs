@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20241105094442_init1")]
+    [Migration("20241105114502_init1")]
     partial class init1
     {
         /// <inheritdoc />
@@ -25,34 +25,13 @@ namespace API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("API.Models.Common", b =>
+            modelBuilder.Entity("API.Models.Device", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Common");
-
-                    b.HasDiscriminator().HasValue("Common");
-
-                    b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("API.Models.Device", b =>
-                {
-                    b.HasBaseType("API.Models.Common");
 
                     b.Property<string>("DeviceLocation")
                         .IsRequired()
@@ -64,28 +43,46 @@ namespace API.Migrations
                     b.Property<int>("MotionSensorSensitivity")
                         .HasColumnType("integer");
 
-                    b.HasDiscriminator().HasValue("Device");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Device");
                 });
 
             modelBuilder.Entity("API.Models.DeviceData", b =>
                 {
-                    b.HasBaseType("API.Models.Common");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<int>("BatteryLevel")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeviceId")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
                     b.HasIndex("DeviceId");
 
-                    b.HasDiscriminator().HasValue("DeviceData");
+                    b.ToTable("DeviceData");
                 });
 
             modelBuilder.Entity("API.Models.User", b =>
                 {
-                    b.HasBaseType("API.Models.Common");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -109,9 +106,14 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -119,41 +121,51 @@ namespace API.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.HasDiscriminator().HasValue("User");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("API.Models.UserDevice", b =>
                 {
-                    b.HasBaseType("API.Models.Common");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeviceId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.HasKey("Id");
+
                     b.HasIndex("DeviceId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Common", t =>
-                        {
-                            t.Property("DeviceId")
-                                .HasColumnName("UserDevice_DeviceId");
-                        });
-
-                    b.HasDiscriminator().HasValue("UserDevice");
+                    b.ToTable("UserDevice");
                 });
 
             modelBuilder.Entity("API.Models.WiFi", b =>
                 {
-                    b.HasBaseType("API.Models.Common");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeviceId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("WiFiName")
                         .IsRequired()
@@ -163,15 +175,11 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.HasKey("Id");
+
                     b.HasIndex("DeviceId");
 
-                    b.ToTable("Common", t =>
-                        {
-                            t.Property("DeviceId")
-                                .HasColumnName("WiFi_DeviceId");
-                        });
-
-                    b.HasDiscriminator().HasValue("WiFi");
+                    b.ToTable("WiFi");
                 });
 
             modelBuilder.Entity("API.Models.DeviceData", b =>

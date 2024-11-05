@@ -2,23 +2,23 @@
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly AppDBContext _context;
         private readonly IConfiguration _configuration;
 
-        public UsersController(AppDBContext context, IConfiguration configuration)
+        public UserController(AppDBContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
         }
 
-        // GET: api/Users
+        // GET: api/User
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUser()
         {
-            var users = await _context.Users.Select(user => new UserDTO
+            var User = await _context.User.Select(user => new UserDTO
             {
                 Id = user.Id,
                 Email = user.Email,
@@ -26,14 +26,14 @@
             })
             .ToListAsync();
 
-            return Ok(users);
+            return Ok(User);
         }
 
-        // GET: api/Users/
+        // GET: api/User/
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.User.FindAsync(id);
 
             if (user == null)
             {
@@ -43,7 +43,7 @@
             return user;
         }
         
-        // PUT: api/Users/
+        // PUT: api/User/
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(string id, User user)
         {
@@ -73,15 +73,15 @@
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/User
         [HttpPost("signUp")]
         public async Task<ActionResult<User>> PostUser(SignUpDTO signUpDTO)
         {
-            if(await _context.Users.AnyAsync(u => u.Username ==signUpDTO.Username))
+            if(await _context.User.AnyAsync(u => u.Username ==signUpDTO.Username))
             {
                 return Conflict(new { message = "Username is already in use." });
             }
-            if (await _context.Users.AnyAsync(u => u.Email == signUpDTO.Email))
+            if (await _context.User.AnyAsync(u => u.Email == signUpDTO.Email))
             {
                 return Conflict(new { message = "Email is already in use." });
             }
@@ -92,7 +92,7 @@
 
             var user = MapSingUpDTOToUser(signUpDTO);
 
-            _context.Users.Add(user);
+            _context.User.Add(user);
 
             try
             {
@@ -106,13 +106,13 @@
             return Ok("User signup sucessful");
         }
 
-        // POST: api/Userss
+        // POST: api/User
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser(LoginDTO loginDTO)
         {
             try
             {
-                var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == loginDTO.Email);
+                var user = await _context.User.SingleOrDefaultAsync(u => u.Email == loginDTO.Email);
                 if (user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.HashedPassword))
                 {
                     return Unauthorized(new { message = "Invalid email or password." });
@@ -129,7 +129,7 @@
         }
 
 
-        // JWT Token used to login users and how long their session is valid for
+        // JWT Token used to login User and how long their session is valid for
         private string GenerateJwtToken(User user)
         {
             var keyString = _configuration["JwtSettings:Key"] ?? Environment.GetEnvironmentVariable("Key");
@@ -163,17 +163,17 @@
         }
 
 
-        // DELETE: api/Users/
+        // DELETE: api/User/
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.User.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.User.Remove(user);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -181,7 +181,7 @@
 
         private bool UserExists(string id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.User.Any(e => e.Id == id);
         }
         
         private bool IsPasswordSecure(string password)

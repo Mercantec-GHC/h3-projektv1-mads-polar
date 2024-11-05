@@ -3,9 +3,7 @@ using API.Models;
 namespace API.Data
 {
     public class AppDBContext : DbContext
-    {
-        public DbSet<User> Users { get; set; }
-        
+    {        
         public AppDBContext(DbContextOptions<AppDBContext> options)
         : base(options)
         {
@@ -57,10 +55,9 @@ namespace API.Data
                 entity.UpdatedAt = DateTime.UtcNow;
             }
         }
-        public DbSet<Common> Common { get; set; }
         public DbSet<Device> Device { get; set; }
         public DbSet<DeviceData> DeviceData { get; set; }
-        public DbSet<DeviceData> User { get; set; }
+        public DbSet<User> User { get; set; }
         public DbSet<UserDevice> UserDevice { get; set; }
         public DbSet<WiFi> WiFi { get; set; }
     }
