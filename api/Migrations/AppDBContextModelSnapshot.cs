@@ -48,31 +48,6 @@ namespace API.Migrations
                     b.ToTable("Device");
                 });
 
-            modelBuilder.Entity("API.Models.DeviceData", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<int>("BatteryLevel")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeviceId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeviceId");
-
-                    b.ToTable("DeviceData");
-                });
-
             modelBuilder.Entity("API.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -179,17 +154,6 @@ namespace API.Migrations
                     b.ToTable("WiFi");
                 });
 
-            modelBuilder.Entity("API.Models.DeviceData", b =>
-                {
-                    b.HasOne("API.Models.Device", "Device")
-                        .WithMany("DeviceData")
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Device");
-                });
-
             modelBuilder.Entity("API.Models.UserDevice", b =>
                 {
                     b.HasOne("API.Models.Device", "Device")
@@ -222,8 +186,6 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.Device", b =>
                 {
-                    b.Navigation("DeviceData");
-
                     b.Navigation("UserDevices");
                 });
 

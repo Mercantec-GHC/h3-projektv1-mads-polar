@@ -5,7 +5,6 @@
         public Status DeviceStatus { get; set; } // Armed, Disarmed, or Alarming
         public string DeviceLocation { get; set; } // Where the sensor is located
         public int MotionSensorSensitivity { get; set; } // Sensor value
-        public List<DeviceData> DeviceData { get; set; }
         public List<UserDevice> UserDevices { get; set; }
 
     }

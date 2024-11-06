@@ -112,6 +112,7 @@ namespace API.Controllers
                 Id = Guid.NewGuid().ToString("N"),
                 DeviceStatus = Status.Disarmed,
                 DeviceLocation = createDeviceDTO.DeviceLocation,
+                //MotionSensorSensitivity = createDeviceDTO.MotionSensorSensitivity,
                 CreatedAt = DateTime.UtcNow.AddHours(2),
                 UpdatedAt = DateTime.UtcNow.AddHours(2),
             };

@@ -48,27 +48,6 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DeviceData",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    DeviceId = table.Column<string>(type: "text", nullable: false),
-                    BatteryLevel = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DeviceData", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DeviceData_Device_DeviceId",
-                        column: x => x.DeviceId,
-                        principalTable: "Device",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "WiFi",
                 columns: table => new
                 {
@@ -118,11 +97,6 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeviceData_DeviceId",
-                table: "DeviceData",
-                column: "DeviceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_User_Email",
                 table: "User",
                 column: "Email",
@@ -153,9 +127,6 @@ namespace API.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "DeviceData");
-
             migrationBuilder.DropTable(
                 name: "UserDevice");
 

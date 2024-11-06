@@ -9,12 +9,12 @@ void SHS::begin()
     Serial.begin(9600); // Initialize the serial communication
 
 
-    setupWiFi():
-    //connectWiFi(); // Connect to WiFi
+    //setupWiFi():
+    connectWiFi(); // Connect to WiFi
     httpClient = new HttpClient(wifiClient, "shs-ubpj.onrender.com", 443);
 }
 
-void SHS::setupWiFi()
+/*void SHS::setupWiFi()
 {
     // Attempt to fetch WiFi credentials from server
     httpClient->get("/api/WiFi");
@@ -41,9 +41,9 @@ void SHS::setupWiFi()
     {
         Serial.println("Failed to fetch WiFi credentials from server.");
     }
-}
+}*/
 
-/*void SHS::connectWiFi()
+void SHS::connectWiFi()
 {
     Serial.print("Connecting to ");
     Serial.println(ssid);
@@ -67,19 +67,13 @@ void SHS::setupWiFi()
     Serial.println("WiFi Connected.");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
-}*/
-
-void SHS::readSensors()
-{
-    // Assuming you have a motion sensor
-    motion = analogRead(motionPin); // or carrier.Env.readMotion();
 }
 
 void SHS::checkMotion() 
 {
-    int motionValue = analogRead(motionPin);
+    int motion = analogRead(motionPin);
 
-    if (motionValue > threshold && !motionDetected) 
+    if (motion > motionDetectionSensitivity && !motionDetected) 
     {
         motionDetected = true;
         Serial.println("Motion Detected!");
@@ -111,14 +105,14 @@ void SHS::checkMotion()
                 break;
             }
 
-            motionValue = analogRead(motionPin);
+            motion = analogRead(motionPin);
 
             // Check multiple times to confirm no motion before resetting `motionDetected`
-            if (motionValue < threshold) 
+            if (motion < motionDetectionSensitivity) 
             {
                 delay(1000); // Add a delay to confirm no motion is detected over time
-                motionValue = analogRead(motionPin);
-                if (motionValue < threshold)
+                motion = analogRead(motionPin);
+                if (motion < motionDetectionSensitivity)
                 {
                     motionDetected = false;
                     updateStatus(); // Reflect "armed without motion" status
@@ -145,24 +139,24 @@ void SHS::armSystem()
     carrier.display.setRotation(180);
     carrier.display.print("Device Armed");
 
-    // Prepare countdown
-    int remainingTime = motionDelay / 1000; // Convert to seconds for countdown
+   int remainingTime = motionDetectionDelay / 1000; // Convert to seconds for countdown
 
-    // Display countdown
+    // Countdown for "Change Status" prompt
     for (int i = remainingTime; i > 0; i--) {
-        // Clear previous countdown text
-        carrier.display.fillRect(30, 120, 150, 30, ST77XX_RED); // Clear previous countdown area
+        // Clear previous countdown area
+        carrier.display.fillRect(70, 120, 150, 60, ST77XX_RED);
 
-        // Update countdown display
+        // Display "Change Status" on a new line
         carrier.display.setCursor(30, 120);
-        carrier.display.print("Detecting in ");
+        carrier.display.print("Detecting motion ");
+
+        // Display "In:" on the next line, followed by the countdown
+        carrier.display.setCursor(85, 140);
+        carrier.display.print("in: ");
         carrier.display.print(i);
 
-        delay(1000);  // Wait for one second
+        delay(1000);  // Wait for one second (display only)
     }
-
-    // Start motion detection after countdown finishes
-    Serial.println("Motion detection active");
 
     // Turn on red LEDs to indicate armed state
     for (int i = 0; i < NUMPIXELS; i++) 
@@ -172,6 +166,7 @@ void SHS::armSystem()
     
     carrier.leds.show(); // Refresh LEDs
     updateStatus();
+    checkMotion();
 }
 
 void SHS::disarmSystem() 
@@ -193,7 +188,7 @@ void SHS::disarmSystem()
 
     Serial.println("Device Disarmed");
 
-    int remainingTime = motionDelay / 1000; // Convert to seconds for countdown
+    int remainingTime = motionDetectionDelay / 1000; // Convert to seconds for countdown
 
     // Countdown for "Change Status" prompt
     for (int i = remainingTime; i > 0; i--) {

@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using API.Models;
-namespace API.Data
+﻿namespace API.Data
 {
     public class AppDBContext : DbContext
     {        
@@ -27,12 +25,6 @@ namespace API.Data
             return base.SaveChanges();
         }
 
-        //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        //{
-        //    UpdateTimestamps();
-        //    return await base.SaveChanges(cancellationToken);
-        //}
-
         private void UpdateTimestamps()
         {
             var entries = ChangeTracker.Entries()
@@ -56,7 +48,6 @@ namespace API.Data
             }
         }
         public DbSet<Device> Device { get; set; }
-        public DbSet<DeviceData> DeviceData { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserDevice> UserDevice { get; set; }
         public DbSet<WiFi> WiFi { get; set; }

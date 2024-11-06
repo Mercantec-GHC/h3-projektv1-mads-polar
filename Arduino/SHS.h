@@ -19,7 +19,7 @@ private:
     bool ledShowOn = false;
 
     // To be deleted
-    String deviceID = "41cfd26dd68d46a89a299e361454dc9c ";
+    String deviceID = "9ba8ba9bc8f64c448bb34f9ad7da4c01 ";
     String batteryLevel = "100";
 
     // Motion 
@@ -53,8 +53,8 @@ public:
 
     SHS(const char *ssid, const char *password);
     void begin();
-    void setupWiFi();
-    //void connectWiFi();
+    //void setupWiFi();
+    void connectWiFi();
     void readSensors();
     void checkMotion();
     void armSystem();
