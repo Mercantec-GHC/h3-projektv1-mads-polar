@@ -1,16 +1,82 @@
 ﻿@page "/"
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
+@inject HttpClient Http
 
-<h1>Welcome to Blazor!</h1>
+@using System.ComponentModel.DataAnnotations
+@using API.Models
+@using System.Net.Http
 
-<p>This is the home page of your Blazor application.</p>
+<h1>Welcome to SHS!</h1>
 
-<button @onclick="Redirect">Sign up</button>
+<p>This is the home page of your security system!</p>
+<br />
+
+@if (loginStatus == true)
+{
+    if (devices == null)
+    {
+        text = "Loading";
+    }
+    else if (devices.Count == 0)
+    {
+        text = "No devices found";
+    }
+    else
+    {
+        text = "";
+        <ul class="list-group">
+            @foreach (var device in devices)
+            {
+                <div class="list-group-item">
+                    <div class="card" style="width: 18.75rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">Device at: @device.DeviceLocation</h5>
+                            <p class="card-text">
+                                Device status: @device.DeviceStatus
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </ul>
+    }
+}
+else
+{
+    text = "Log in to view data";
+}
+
+<p>@text</p>
+
 
 @code {
-    private void Redirect()
+    private string text = "";
+    private bool loginStatus;
+    private List<Device> devices;
+
+
+    protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("Button clicked!");
-        NavManager.NavigateTo("/signup");
+        devices = await Http.GetFromJsonAsync<List<Device>>("https://shs-ubpj.onrender.com/api/Devices");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if(firstRender)
+        {
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "jwtToken");
+            loginStatus = !string.IsNullOrEmpty(token);
+            StateHasChanged();
+            if(loginStatus == true)
+            {
+                Console.WriteLine("Token found: " + token);
+            } else
+            {
+                Console.WriteLine("Token not found :(");
+            }
+        }
     }
 }
