@@ -43,11 +43,12 @@
     {
         try
         {
-            var response = await Http.PostAsJsonAsync("https://shs-ubpj.onrender.com/api/Users/signUp", signUpModel);
+            var response = await Http.PostAsJsonAsync("https://shs-ubpj.onrender.com/api/User/signUp", signUpModel);
 
             if (response.IsSuccessStatusCode)
             {
                 responseMessage = "Sign-up successful!";
+                NavManager.NavigateTo("/");
             }
             else
             {
