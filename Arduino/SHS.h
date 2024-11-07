@@ -19,7 +19,7 @@ private:
     bool ledShowOn = false;
 
     // To be deleted
-    String deviceID = "9ba8ba9bc8f64c448bb34f9ad7da4c01 ";
+    String deviceID = "60380ebb671740daa5f2f84e5b368508 ";
     String batteryLevel = "100";
 
     // Motion 
